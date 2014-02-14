@@ -11,6 +11,10 @@ Setup numeter CI
     apt-get update
     apt-get install vagrant jenkins nginx
 
+Add your vagrant box :
+
+    vagrant box add debian-7 http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box
+
 Config nginx
 -------------
 
@@ -40,10 +44,6 @@ Go to : http://myjenkins
 **Donner le droit en sudo pour jenkins :**
 
 ```
-usermod -a -G sudo jenkins
-```
-
-```
 visudo
 ```
 
@@ -54,6 +54,10 @@ jenkins ALL = NOPASSWD: /usr/bin/vagrant
 **Ajouter les jobs numeter :**
 
     cd /var/lib/jenkins/ && git clone https://github.com/shaftmx/simple-numeter-ci jobs
+
+Go on your jenkins web interface and refresh config from disk :
+
+  * http://myjenkins/manage#
 
 **Exemple de job jenkins :**
 
@@ -75,19 +79,12 @@ Stop
 cd /home/vagrant/ && sudo /usr/bin/vagrant destroy -f from_source
 ```
 
-Config vagrant
+Vagrant memo
 -------------
 
-Mettre en place ma box vagrant :
 ```
-mkdir vagrant_config
-vagrant box add debian-7 http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box
-vagrant init debian-7
-```
-
-Tester la box :
-```
-vagrant up
-vagrant ssh
-vagrant destroy
+vagrant up boxname
+vagrant halt boxname
+vagrant ssh boxname
+vagrant destroy boxname
 ```
