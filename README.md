@@ -21,7 +21,7 @@ server {
         location / {
         proxy_redirect     off;
         proxy_set_header   X-FORWARDED_PROTO http;
-        proxy_set_header   Host              10.66.6.205:80;
+        proxy_set_header   Host              $host;
         proxy_set_header   X-Real-IP         $remote_addr;
         proxy_pass http://localhost:8080;
         }
@@ -31,11 +31,11 @@ server {
 Config jenkins
 ----------------
 
-Go to : http://10.66.6.205
+Go to : http://myjenkins
 
 **Installation du plugin pipeline**
 
-  * http://10.66.6.205/pluginManager/available : Delivery Pipeline Plugin
+  * http://myjenkins/pluginManager/available : Delivery Pipeline Plugin
 
 **Donner le droit en sudo pour jenkins :**
 
