@@ -88,3 +88,18 @@ vagrant halt boxname
 vagrant ssh boxname
 vagrant destroy boxname
 ```
+
+**In case you want to use lxc insted virtualbox :**
+
+    * https://github.com/fgrehm/vagrant-lxc
+    * https://github.com/fgrehm/vagrant-lxc/wiki/Usage-on-debian-hosts
+
+Add this in env vars of your jenkins user :
+
+    export VAGRANT_DEFAULT_PROVIDER=lxc
+
+In case you are using sudo to launch vagrant commandes :
+
+    Defaults env_keep +="VAGRANT_DEFAULT_PROVIDER"
+
+
