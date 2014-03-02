@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant destroy -f $JOB_NAME
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant up $JOB_NAME
+# Sed apt source in fr because my ci is in france
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i sed -i &apos;s@http.us.debian.org@ftp.fr.debian.org@&apos; /etc/apt/sources.list&quot;</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i apt-get update&quot;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i PATH=$PATH:/usr/local/sbin:/usr/sbin:/sbin apt-get install -y git quilt git-buildpackage pbuilder cowbuilder&quot;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;git clone https://github.com/enovance/numeter&quot;
+
+####DEBUG####
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i PATH=\$PATH:/usr/local/sbin:/sbin:/usr/sbin UPSTREAM_BRANCH=update_oslo.messaging GIT_PBUILDER_OUTPUT_DIR=/tmp \$PWD/numeter/extra/build-package.sh wheezy&quot;
+
+#cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;cd numeter &amp;&amp; sudo -i PATH=\$PATH:/usr/local/sbin:/sbin:/usr/sbin UPSTREAM_BRANCH=master GIT_PBUILDER_OUTPUT_DIR=/tmp ./extra/build-package.sh wheezy&quot;
+####
+
+#------------------------
+# Add debian jessie source for package like python-stevedore (&gt;= 0.12)
+preferences=&apos;&quot;Package: *\nPin: release o=Debian,a=testing,n=jessie\nPin-Priority: 100\n&quot;&apos;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;echo -e $preferences | sudo -i tee /etc/apt/preferences.d/debian-jessie&quot;
+
+repo=&apos;deb http://ftp.fr.debian.org/debian jessie main contrib&apos;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;echo $repo | sudo -i tee /etc/apt/sources.list.d/debian-jessie.list&quot;
+
+# Add enovance repo for oslo-*
+repo=&apos;deb http://havana.pkgs.enovance.com/debian havana main&apos;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;echo $repo | sudo -i tee /etc/apt/sources.list.d/debian-havana.list&quot;
+repo=&apos;deb http://havana.pkgs.enovance.com/debian havana-backports main&apos;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;echo $repo | sudo -i tee -a /etc/apt/sources.list.d/debian-havana.list&quot;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 64AA94D00B849883&quot;
+
+####DEBUG####
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i apt-get update&quot;
+
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i apt-get install -y -t jessie python-stevedore&quot;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i apt-get install -y python-oslo.messaging&quot;
+
+#exit 0
+####
+
+#--------------------
+# Add source for package like oslo.messaging (not actually in wheezy) 
+repo=&apos;deb http://repo:reiY5ib6@repo.numeter.com numeter-jenkins main contrib non-free&apos;
+#cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;echo $repo | sudo -i tee -a /etc/apt/sources.list.d/numeter-jenkins.list&quot;
+key=&apos;-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+mQINBEvEh68BEADBOJOdC3/6Kp8+JLyHWwqM6wpdyNfjM4uSp5c/Jd5CKowKGnJ9
+AH8hsV+tyVNNh1B0gm6kST7yRF+CZwZs147XeZuZx4mD+P2IIHJsbjtynDlllCXF
+L8wAozkAI/KvYoLc7AaeyaGQn6t8i5VaNyU9QBKvqrFGUGEvigSgfwGZyaO4TZ9k
+e80cwQJ5lAkU4UHABXC96TemMS1SdyBfeEwB4psDaJftMS7cLd/SrlwMWZLd6nRE
+RqmCDJPWNCQ8CTuxMApy1tUu75Gf+Obd6YxCv1h7pTzOvBKykTyTTRxYn27rxHHj
+Rt5JEL7ZKrBlyW0PftjgDtgalBigthVFaEwWbTcfCLGKuKYUmndwjWba9NjW9h+c
+KPOyY+ON/e0PADwOV+rPsEvORQ8/bskVDYTX+dRMtuc++oTdecF3+L9FZelm8+J8
+MqDLJ+qfATH9AllZ8bD976k2VF0sg2RIOFBlpZqGnviwtA5smmw9fzubyV3+r4Ag
+FUqZm1ZFXiqd6T4W4mf3PeP5A8EO6q88cikRgFoOwbGnMn4dG/yl2462lWPW5dDs
+7KEE67w/p/Q0+uUsCZA3BNT5X23mDkoTnCFM8UanuYc2IyMv7Y1L/faWJ0ABa/5S
+LCgDXJG8dck44ISYTPDBILW3oXwZADpkjXzrmH2cRys6Rh+mFQTDEkaEswARAQAB
+tCdTdXBwb3J0IGVOb3ZhbmNlIDxzdXBwb3J0QGVub3ZhbmNlLmNvbT6JAjYEEwEC
+ACAFAkvEh68CGwMGCwkIBwMCBBUCCAMEFgIDAQIeAQIXgAAKCRCxOWe3OpZFFfzt
+D/4tddh1kB2nzNvAu9vP2nAMBTRmNJ8iJ3v5y1x1Le6vJHk7VqAPU4S55HhSQ+Ek
+EMfHi9l1ovo395Q+UrVTFaIoviYf0HOH1ydlGelSEAFmyrf2q5ByneVI/PG5JeWK
+KgJM0KUAgUU4Sm1xHLHXhB9x2623otkk7PrFshgSoygT7quRsyZl2etrDxa1aoCx
+LkOLZIKiD7BPGslQxRQAWfLOWdHgRmRNYO78SIs/IdpQH5JfVAgFLyUDHpX/hK/R
+BkygDJeSzvG9fdVNiteGeBLdWSiyXb7XW9miFZN3ZeKDsh6cNSMD/8GwjZR5sI9z
+GmBR4KTixXPmDHc/cSEf8+xpL+2Vcf6ZhhmVUIg/3N6iUw85qJJDf58cPZsY6sdg
+79iZDshV/jPFFi/0a3vbcBWFk8GuexA7O1uYavX+JRAmTDnNf94Ka7CDZIf48r1m
+WKbE4G+iHLL5YA1UdPuZaNyWNOswwkB7LRNMCOhPmQZ1uSTNrk7+T9gM/3IhxVGB
+7NYq1RpQrLjhtekxMeIUP4tEekhIQ/FhUjMjN64deUBX2QdwLR3kHKBAwVCCvIT6
+O3MZAWfSJgdSBj3FRJkhARSs3OjvBOFbZVCZlzuuR2PN+eh7tuTG5HN/etH7tEcY
+VYXD9Hdl/8Ghxx2ivHbc/lio9KdRhSi+8MCfCLWC6dQUUA==
+=rb3s
+-----END PGP PUBLIC KEY BLOCK-----&apos;
+
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;echo &apos;$key&apos; | sudo -i apt-key add -&quot;
+#----------------------------------------------------------
+
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i apt-get update&quot;
+
+# test package
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i PATH=\$PATH:/usr/local/sbin:/sbin:/usr/sbin PACKAGES_PATH=/tmp \$PWD/numeter/extra/package_test.sh --go&quot;</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>#cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant destroy -f $JOB_NAME</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
