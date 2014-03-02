@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>true</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant destroy -f $JOB_NAME
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant up $JOB_NAME
+# Sed apt source in fr because my ci is in france
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i sed -i &apos;s@http.us.debian.org@ftp.fr.debian.org@&apos; /etc/apt/sources.list&quot;</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i apt-get update; sudo -i apt-get install -y git&quot;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;git clone https://github.com/enovance/numeter&quot;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i BRANCH=&apos;master&apos; numeter/extra/sources_test.sh --go&quot;
+</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command></command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

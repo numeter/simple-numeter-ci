@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant destroy -f $JOB_NAME
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant up $JOB_NAME
+# Sed apt source in fr because my ci is in france
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i sed -i &apos;s@http.us.debian.org@ftp.fr.debian.org@&apos; /etc/apt/sources.list&quot;</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i apt-get update; sudo -i apt-get install -y git python-setuptools python-virtualenv python-dev&quot;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i easy_install pip&quot;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i pip install tox&quot;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;git clone https://github.com/enovance/numeter&quot;
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;cd numeter &amp;&amp; tox -epy27 tests/units -- -v --with-xunit&quot;</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant destroy -f $JOB_NAME</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
