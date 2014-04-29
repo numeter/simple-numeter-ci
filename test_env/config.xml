@@ -6,7 +6,7 @@
   <properties/>
   <scm class="hudson.scm.NullSCM"/>
   <canRoam>true</canRoam>
-  <disabled>true</disabled>
+  <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
@@ -21,8 +21,7 @@ cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $J
     <hudson.tasks.Shell>
       <command>cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i apt-get update; sudo -i apt-get install -y git&quot;
 cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;git clone https://github.com/enovance/numeter&quot;
-cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i BRANCH=&apos;master&apos; numeter/extra/sources_test.sh --go&quot;
-</command>
+cd /var/lib/jenkins/jobs/vagrant_config/ &amp;&amp; sudo /usr/bin/vagrant ssh $JOB_NAME -c &quot;sudo -i BRANCH=&quot;master&quot; \$PWD/numeter/extra/sources_test.sh --go&quot;</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
       <command></command>
